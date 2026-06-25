@@ -13,6 +13,24 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            position: relative; /* Allows positioning the counter relative to the screen */
+        }
+        /* Top Right Visit Counter Style */
+        .visit-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ffffff;
+            padding: 8px 14px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            border: 1px solid #e0e0e0;
+        }
+        .counter-num {
+            color: #2196F3;
         }
         .calculator-card {
             background: #ffffff;
@@ -78,6 +96,8 @@
         }
         .result-val {
             font-weight: bold;
+            font-family: monospace; /* Kept clean so 4 decimal places line up nicely */
+            font-size: 16px;
         }
         .total-ex { color: #4CAF50; }
         .unit-ex { color: #FF9800; }
@@ -85,12 +105,16 @@
 </head>
 <body>
 
+<div class="visit-counter">
+    Visits: <span id="visitCount" class="counter-num">0</span>
+</div>
+
 <div class="calculator-card">
     <h2>Tax Calculator (5%)</h2>
     
     <div class="input-group">
         <label for="totalIncTax">Total Price (Incl. Tax)</label>
-        <input type="number" id="totalIncTax" step="any" placeholder="0.00">
+        <input type="number" id="totalIncTax" step="any" placeholder="0.0000">
     </div>
 
     <div class="input-group">
@@ -103,16 +127,29 @@
     <div class="results" id="resultsSection" style="display: none;">
         <div class="result-item">
             <span>Total Price (Excl. Tax):</span>
-            <span id="resTotal" class="result-val total-ex">0.00</span>
+            <span id="resTotal" class="result-val total-ex">0.0000</span>
         </div>
         <div class="result-item">
             <span>Unit Price (Excl. Tax):</span>
-            <span id="resUnit" class="result-val unit-ex">0.00</span>
+            <span id="resUnit" class="result-val unit-ex">0.0000</span>
         </div>
     </div>
 </div>
 
 <script>
+// --- Visit Counter Logic ---
+// Tracks the visits in the browser storage so it persists when they close and re-open the page.
+let visits = localStorage.getItem('calculator_visits');
+if (visits === null) {
+    visits = 1;
+} else {
+    visits = parseInt(visits) + 1;
+}
+localStorage.setItem('calculator_visits', visits);
+document.getElementById('visitCount').innerText = visits;
+
+
+// --- Calculation Logic ---
 function calculatePrice() {
     const totalIncTax = parseFloat(document.getElementById('totalIncTax').value);
     const quantity = parseFloat(document.getElementById('quantity').value);
@@ -131,8 +168,9 @@ function calculatePrice() {
     const totalWithoutTax = totalIncTax / (1 + taxRate);
     const unitPriceWithoutTax = totalWithoutTax / quantity;
 
-    document.getElementById('resTotal').innerText = totalWithoutTax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('resUnit').innerText = unitPriceWithoutTax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    // Fixed to exactly 4 decimal places (.toFixed(4))
+    document.getElementById('resTotal').innerText = totalWithoutTax.toFixed(4);
+    document.getElementById('resUnit').innerText = unitPriceWithoutTax.toFixed(4);
     
     document.getElementById('resultsSection').style.display = 'block';
 }
