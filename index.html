@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tax Calculator (5%)</title>
+    <title>EazyTax - Global VAT Portal</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -11,9 +11,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            position: relative; /* Allows positioning the counter relative to the screen */
+            position: relative;
+            padding: 20px 0;
+            box-sizing: border-box;
         }
         /* Top Right Visit Counter Style */
         .visit-counter {
@@ -38,39 +40,110 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             width: 100%;
-            max-width: 360px;
+            max-width: 420px;
             box-sizing: border-box;
         }
+        
+        /* Eazy Branding Components */
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: #2196F3;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 3px 8px rgba(33, 150, 243, 0.3);
+            margin-bottom: 8px;
+        }
+        .logo-text {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2c3e50;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+        .logo-text span {
+            color: #2196F3;
+        }
+        
         h2 {
             margin-top: 0;
-            color: #333;
+            color: #555;
             text-align: center;
-            font-size: 22px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 12px;
         }
         .input-group {
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
         label {
             display: block;
             margin-bottom: 6px;
             color: #666;
             font-size: 14px;
+            font-weight: 600;
         }
-        input {
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .input-prefix {
+            position: absolute;
+            left: 12px;
+            color: #777;
+            font-weight: bold;
+            font-size: 14px;
+            background: #eef2f5;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        input, select {
             width: 100%;
-            padding: 10px;
+            padding: 11px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
             box-sizing: border-box;
+            background-color: #fff;
+            color: #333;
         }
-        input:focus {
+        input.has-prefix {
+            padding-left: 65px;
+        }
+        input:focus, select:focus {
             border-color: #2196F3;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+        .tax-badge-info {
+            display: inline-block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #2196F3;
+            font-weight: bold;
+            background: #e3f2fd;
+            padding: 2px 8px;
+            border-radius: 4px;
         }
         button {
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             background-color: #2196F3;
             color: white;
             border: none;
@@ -79,28 +152,32 @@
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
+            margin-top: 5px;
         }
         button:hover {
             background-color: #1e88e5;
         }
         .results {
-            margin-top: 20px;
+            margin-top: 22px;
             border-top: 1px solid #eee;
-            padding-top: 15px;
+            padding-top: 18px;
         }
         .result-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 15px;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #444;
         }
         .result-val {
             font-weight: bold;
-            font-family: monospace; /* Kept clean so 4 decimal places line up nicely */
-            font-size: 16px;
+            font-family: monospace;
+            font-size: 17px;
         }
         .total-ex { color: #4CAF50; }
         .unit-ex { color: #FF9800; }
+        .hidden-element { display: none !important; }
     </style>
 </head>
 <body>
@@ -110,11 +187,51 @@
 </div>
 
 <div class="calculator-card">
-    <h2>Tax Calculator (5%)</h2>
-    
+    <div class="logo-container">
+        <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+        </div>
+        <h1 class="logo-text">Eazy<span>Tax</span></h1>
+    </div>
+
+    <h2>Global VAT Engine Hub</h2>
+
+    <div class="input-group">
+        <label for="countrySelector">Select Country Ruleset</label>
+        <select id="countrySelector" onchange="handleCountryRulesetChange()">
+            <option value="AE" data-rate="0.05" data-curr="AED" selected>United Arab Emirates (5%)</option>
+            <option value="SA" data-rate="0.15" data-curr="SAR">Saudi Arabia (15% VAT)</option>
+            <option value="BH" data-rate="0.10" data-curr="BHD">Bahrain (10% VAT)</option>
+            <option value="OM" data-rate="0.05" data-curr="OMR">Oman (5% VAT)</option>
+            <option value="QA" data-rate="0.05" data-curr="QAR">Qatar (5% Expected VAT)</option>
+            <option value="KW" data-rate="0.05" data-curr="KWD">Kuwait (5% Expected VAT)</option>
+            <option value="UK" data-rate="0.20" data-curr="GBP">United Kingdom (20% Standard)</option>
+            <option value="IN" data-rate="0.18" data-curr="INR">India (18% Average GST)</option>
+            <option value="DE" data-rate="0.19" data-curr="EUR">Germany (19% MwSt.)</option>
+            <option value="FR" data-rate="0.20" data-curr="EUR">France (20% TVA)</option>
+            <option value="EG" data-rate="0.14" data-curr="EGP">Egypt (14% VAT)</option>
+            <option value="JO" data-rate="0.16" data-curr="JOD">Jordan (16% GST)</option>
+            <option value="SGP" data-rate="0.09" data-curr="SGD">Singapore (9% GST)</option>
+            <option value="AUS" data-rate="0.10" data-curr="AUD">Australia (10% GST)</option>
+            <option value="CUSTOM" data-rate="0.00" data-curr="USD">Custom Manual Value Configuration</option>
+        </select>
+        <span id="taxRateDisplayBadge" class="tax-badge-info">Active System Configuration: 5% VAT</span>
+    </div>
+
+    <div class="input-group hidden-element" id="customTaxRateGroup">
+        <label for="customTaxRateField">Custom Tax Percentage Rate (%)</label>
+        <input type="number" id="customTaxRateField" step="any" value="5.00" placeholder="E.g. 5.00">
+    </div>
+
     <div class="input-group">
         <label for="totalIncTax">Total Price (Incl. Tax)</label>
-        <input type="number" id="totalIncTax" step="any" placeholder="0.0000">
+        <div class="input-wrapper">
+            <span class="input-prefix" id="currencyPrefixLabel">AED</span>
+            <input type="number" id="totalIncTax" class="has-prefix" step="any" placeholder="0.0000">
+        </div>
     </div>
 
     <div class="input-group">
@@ -122,23 +239,22 @@
         <input type="number" id="quantity" value="1" step="any">
     </div>
 
-    <button onclick="calculatePrice()">Calculate</button>
+    <button onclick="calculatePrice()">Calculate Values</button>
 
     <div class="results" id="resultsSection" style="display: none;">
         <div class="result-item">
             <span>Total Price (Excl. Tax):</span>
-            <span id="resTotal" class="result-val total-ex">0.0000</span>
+            <span class="result-val total-ex"><span id="resTotal">0.0000</span> <span class="currency-postfix">AED</span></span>
         </div>
         <div class="result-item">
             <span>Unit Price (Excl. Tax):</span>
-            <span id="resUnit" class="result-val unit-ex">0.0000</span>
+            <span class="result-val unit-ex"><span id="resUnit">0.0000</span> <span class="currency-postfix">AED</span></span>
         </div>
     </div>
 </div>
 
 <script>
 // --- Visit Counter Logic ---
-// Tracks the visits in the browser storage so it persists when they close and re-open the page.
 let visits = localStorage.getItem('calculator_visits');
 if (visits === null) {
     visits = 1;
@@ -148,11 +264,54 @@ if (visits === null) {
 localStorage.setItem('calculator_visits', visits);
 document.getElementById('visitCount').innerText = visits;
 
+// --- Country Config Rules Dynamic Actions ---
+function handleCountryRulesetChange() {
+    const selector = document.getElementById('countrySelector');
+    const selectedOption = selector.options[selector.selectedIndex];
+    const customGroup = document.getElementById('customTaxRateGroup');
+    
+    const currencyCode = selectedOption.getAttribute('data-curr');
+    const defaultRate = parseFloat(selectedOption.getAttribute('data-rate'));
 
-// --- Calculation Logic ---
+    // Update Currency Display Labels Strings
+    document.getElementById('currencyPrefixLabel').innerText = currencyCode;
+    const postfixes = document.getElementsByClassName('currency-postfix');
+    for(let el of postfixes) { el.innerText = currencyCode; }
+
+    // Toggle custom menu view based on rule flags 
+    if(selectedOption.value === 'CUSTOM') {
+        customGroup.classList.remove('hidden-element');
+        document.getElementById('taxRateDisplayBadge').innerText = "Manual Field Input Overwrite Active";
+    } else {
+        customGroup.classList.add('hidden-element');
+        document.getElementById('taxRateDisplayBadge').innerText = `Active System Configuration: ${(defaultRate * 100).toFixed(0)}% VAT`;
+    }
+    
+    // Clear display rows during changes
+    document.getElementById('resultsSection').style.display = 'none';
+}
+
+// --- Calculation Logic Framework ---
 function calculatePrice() {
     const totalIncTax = parseFloat(document.getElementById('totalIncTax').value);
     const quantity = parseFloat(document.getElementById('quantity').value);
+    
+    // Process Country Variable Tax Rule Settings 
+    const selector = document.getElementById('countrySelector');
+    const selectedOption = selector.options[selector.selectedIndex];
+    
+    let taxRate = 0.05; // Standard global base index default 
+    
+    if(selectedOption.value === 'CUSTOM') {
+        const rawInputPercent = parseFloat(document.getElementById('customTaxRateField').value);
+        if(isNaN(rawInputPercent) || rawInputPercent < 0) {
+            alert("Please enter a valid custom tax percentage row entry.");
+            return;
+        }
+        taxRate = rawInputPercent / 100;
+    } else {
+        taxRate = parseFloat(selectedOption.getAttribute('data-rate'));
+    }
 
     if (isNaN(totalIncTax) || isNaN(quantity)) {
         alert("Please enter valid numeric values.");
@@ -164,16 +323,18 @@ function calculatePrice() {
         return;
     }
 
-    const taxRate = 0.05;
     const totalWithoutTax = totalIncTax / (1 + taxRate);
     const unitPriceWithoutTax = totalWithoutTax / quantity;
 
-    // Fixed to exactly 4 decimal places (.toFixed(4))
+    // Output formatted to 4 decimal places
     document.getElementById('resTotal').innerText = totalWithoutTax.toFixed(4);
     document.getElementById('resUnit').innerText = unitPriceWithoutTax.toFixed(4);
     
     document.getElementById('resultsSection').style.display = 'block';
 }
+
+// Initialize setup mapping on boot load
+handleCountryRulesetChange();
 </script>
 
 </body>
