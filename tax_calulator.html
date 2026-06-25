@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Calculator (5%)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .calculator-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 360px;
+            box-sizing: border-box;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+            font-size: 22px;
+        }
+        .input-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #666;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            border-color: #2196F3;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #1e88e5;
+        }
+        .results {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        .result-val {
+            font-weight: bold;
+        }
+        .total-ex { color: #4CAF50; }
+        .unit-ex { color: #FF9800; }
+    </style>
+</head>
+<body>
+
+<div class="calculator-card">
+    <h2>Tax Calculator (5%)</h2>
+    
+    <div class="input-group">
+        <label for="totalIncTax">Total Price (Incl. Tax)</label>
+        <input type="number" id="totalIncTax" step="any" placeholder="0.00">
+    </div>
+
+    <div class="input-group">
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" value="1" step="any">
+    </div>
+
+    <button onclick="calculatePrice()">Calculate</button>
+
+    <div class="results" id="resultsSection" style="display: none;">
+        <div class="result-item">
+            <span>Total Price (Excl. Tax):</span>
+            <span id="resTotal" class="result-val total-ex">0.00</span>
+        </div>
+        <div class="result-item">
+            <span>Unit Price (Excl. Tax):</span>
+            <span id="resUnit" class="result-val unit-ex">0.00</span>
+        </div>
+    </div>
+</div>
+
+<script>
+function calculatePrice() {
+    const totalIncTax = parseFloat(document.getElementById('totalIncTax').value);
+    const quantity = parseFloat(document.getElementById('quantity').value);
+
+    if (isNaN(totalIncTax) || isNaN(quantity)) {
+        alert("Please enter valid numeric values.");
+        return;
+    }
+
+    if (quantity <= 0) {
+        alert("Quantity must be greater than zero.");
+        return;
+    }
+
+    const taxRate = 0.05;
+    const totalWithoutTax = totalIncTax / (1 + taxRate);
+    const unitPriceWithoutTax = totalWithoutTax / quantity;
+
+    document.getElementById('resTotal').innerText = totalWithoutTax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('resUnit').innerText = unitPriceWithoutTax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    
+    document.getElementById('resultsSection').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
